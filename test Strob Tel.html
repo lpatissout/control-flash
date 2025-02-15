@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contrôle Flash</title>
+    <style>
+        body { text-align: center; font-family: Arial, sans-serif; padding: 20px; }
+        button { font-size: 20px; padding: 10px; margin: 10px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Contrôle du Flash</h1>
+    <button id="toggleFlash">Activer Flash</button>
+
+    <script>
+        let isFlashOn = false;
+        let track;
+        let imageCapture;
+
+        async function toggleFlash() {
+            try {
+                if (!track) {
+                    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+                    track = stream.getVideoTracks()[0];
+                    imageCapture = new ImageCapture(track);
+                }
+
+                isFlashOn = !isFlashOn;
+                await track.applyConstraints({ advanced: [{ torch: isFlashOn }] });
+
+                document.getElementById('toggleFlash').textContent = isFlashOn ? "Désactiver Flash" : "Activer Flash";
+            } catch (error) {
+                console.error("Erreur d'accès au flash :", error);
+                alert("Impossible d'activer le flash.");
+            }
+        }
+
+        document.getElementById('toggleFlash').addEventListener('click', toggleFlash);
+    </script>
+</body>
+</html>
